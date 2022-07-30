@@ -39,6 +39,14 @@ export class Node<T> {
         }
     }
 
+    public async delete(subPath: string): Promise<void> {
+        const response = await this.client.del(`${this.path}/${subPath}`);
+
+        if (response == 0) {
+            throw new Error(`Could not delete "${this.path}/${subPath}"`);
+        }
+    }
+
     public async update(subPath: string, callback: (oldValue: T) => T): Promise<void> {
         const oldValue = await this.load(subPath);
         const newValue = callback(oldValue);

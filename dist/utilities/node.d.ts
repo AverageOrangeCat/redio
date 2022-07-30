@@ -5,5 +5,6 @@ export declare class Node<T> {
     exists(subPath: string): Promise<boolean>;
     store(subPath: string, value: T): Promise<void>;
     load(subPath: string): Promise<T>;
+    delete(subPath: string): Promise<void>;
     update(subPath: string, callback: (oldValue: T) => T): Promise<void>;
 }

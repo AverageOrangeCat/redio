@@ -34,6 +34,12 @@ class Node {
             return JSON.parse(response);
         }
     }
+    async delete(subPath) {
+        const response = await this.client.del(`${this.path}/${subPath}`);
+        if (response == 0) {
+            throw new Error(`Could not delete "${this.path}/${subPath}"`);
+        }
+    }
     async update(subPath, callback) {
         const oldValue = await this.load(subPath);
         const newValue = callback(oldValue);

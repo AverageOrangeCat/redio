@@ -51,6 +51,21 @@ const user = await users.load('user@01');
 console.log(user);
 ```
 
+## Delete
+
+``` typescript
+import { Node } from 'redio';
+
+interface User {
+    name: string;
+    password: string;
+}
+
+const users = new Node<User>('users', /** optional redis://alice:foobared@awesome.redis.server:6380**/);
+
+await users.delete('user@01');
+```
+
 ## Update
 
 ``` typescript
