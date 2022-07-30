@@ -1,0 +1,28 @@
+{
+  "name": "redio",
+  "version": "0.1.0",
+  "description": "Makes redis more typed based.",
+  "main": "dist/index.js",
+  "scripts": {
+    "start": "node .",
+    "build": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KuengNoelTBZ/redio.git"
+  },
+  "author": "Noel Kueng",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/KuengNoelTBZ/redio/issues"
+  },
+  "homepage": "https://github.com/KuengNoelTBZ/redio#readme",
+  "devDependencies": {
+    "typescript": "^4.7.4"
+  },
+  "dependencies": {
+    "@types/node": "^18.6.2",
+    "redis": "^4.2.0"
+  }
+}
