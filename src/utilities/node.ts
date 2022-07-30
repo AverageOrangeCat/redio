@@ -11,6 +11,16 @@ export class Node<T> {
         this.client.connect();
     }
 
+    public async exists(subPath: string): Promise<boolean> {
+        const response = await this.client.exists(`${this.path}/${subPath}`);
+
+        if (response == 0) {
+            return false;
+        } else {
+            return true
+        }
+    }
+
     public async store(subPath: string, value: T): Promise<void> {
         const response = await this.client.set(`${this.path}/${subPath}`, JSON.stringify(value));
         

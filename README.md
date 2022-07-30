@@ -1,10 +1,21 @@
 # Redio
 
-<center>
-
 ![Redio Logo](./img/redio-logo.png)
 
-</center>
+## Exists
+
+``` typescript
+import { Node } from 'redio';
+
+interface User {
+    name: string;
+    password: string;
+}
+
+const users = new Node<User>('users', /** optional redis://alice:foobared@awesome.redis.server:6380**/);
+const exists = await users.exists('user@01');
+console.log(exists);
+```
 
 ## Store
 
@@ -27,7 +38,6 @@ await users.store('user@01', {
 ## Load
 
 ``` typescript
-import { stdout } from 'process';
 import { Node } from 'redio';
 
 interface User {
@@ -38,7 +48,7 @@ interface User {
 const users = new Node<User>('users', /** optional redis://alice:foobared@awesome.redis.server:6380**/);
 
 const user = await users.load('user@01');
-stdout.write(`${user}\n`);
+console.log(user);
 ```
 
 ## Update

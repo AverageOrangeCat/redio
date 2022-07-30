@@ -10,6 +10,15 @@ class Node {
         this.client = (0, redis_1.createClient)({ url: url });
         this.client.connect();
     }
+    async exists(subPath) {
+        const response = await this.client.exists(`${this.path}/${subPath}`);
+        if (response == 0) {
+            return false;
+        }
+        else {
+            return true;
+        }
+    }
     async store(subPath, value) {
         const response = await this.client.set(`${this.path}/${subPath}`, JSON.stringify(value));
         if (response != 'OK') {
