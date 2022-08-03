@@ -1,5 +1,6 @@
 export declare class Node<T> {
     private path;
+    private pathHash;
     private client;
     constructor(path: string, url?: string);
     exists(subPath: string): Promise<boolean>;

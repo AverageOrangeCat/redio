@@ -1,12 +1,15 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Node = void 0;
+const crypto = require("crypto");
 const redis_1 = require("redis");
 class Node {
     path;
+    pathHash;
     client;
     constructor(path, url) {
         this.path = path;
+        this.pathHash = crypto.createHash('md5').update(path).digest('hex');
         this.client = (0, redis_1.createClient)({ url: url });
         this.client.connect();
     }
@@ -20,13 +23,15 @@ class Node {
         }
     }
     async store(subPath, value) {
-        const response = await this.client.set(`${this.path}/${subPath}`, JSON.stringify(value));
+        const subPathHash = crypto.createHash('md5').update(subPath).digest('hex');
+        const response = await this.client.set(`${this.pathHash}/${subPathHash}`, JSON.stringify(value));
         if (response != 'OK') {
             throw new Error(`Could not store "${value}" at "${this.path}/${subPath}"`);
         }
     }
     async load(subPath) {
-        const response = await this.client.get(`${this.path}/${subPath}`);
+        const subPathHash = crypto.createHash('md5').update(subPath).digest('hex');
+        const response = await this.client.get(`${this.pathHash}/${subPathHash}`);
         if (response == null) {
             throw new Error(`Could not load "${this.path}/${subPath}"`);
         }
@@ -35,7 +40,8 @@ class Node {
         }
     }
     async delete(subPath) {
-        const response = await this.client.del(`${this.path}/${subPath}`);
+        const subPathHash = crypto.createHash('md5').update(subPath).digest('hex');
+        const response = await this.client.del(`${this.pathHash}/${subPathHash}`);
         if (response == 0) {
             throw new Error(`Could not delete "${this.path}/${subPath}"`);
         }

@@ -1,12 +1,15 @@
+import * as crypto from 'crypto';
 import { RedisClientType } from "@redis/client";
 import { createClient } from "redis";
 
 export class Node<T> {
     private path: string;
+    private pathHash: string;
     private client: RedisClientType;
 
     public constructor(path: string, url?: string) {
         this.path = path;
+        this.pathHash = crypto.createHash('md5').update(path).digest('hex');
         this.client = createClient({ url: url });
         this.client.connect();
     }
@@ -22,7 +25,8 @@ export class Node<T> {
     }
 
     public async store(subPath: string, value: T): Promise<void> {
-        const response = await this.client.set(`${this.path}/${subPath}`, JSON.stringify(value));
+        const subPathHash = crypto.createHash('md5').update(subPath).digest('hex');
+        const response = await this.client.set(`${this.pathHash}/${subPathHash}`, JSON.stringify(value));
         
         if (response != 'OK') {
             throw new Error(`Could not store "${value}" at "${this.path}/${subPath}"`);
@@ -30,7 +34,8 @@ export class Node<T> {
     }
 
     public async load(subPath: string): Promise<T> {
-        const response = await this.client.get(`${this.path}/${subPath}`);
+        const subPathHash = crypto.createHash('md5').update(subPath).digest('hex');
+        const response = await this.client.get(`${this.pathHash}/${subPathHash}`);
 
         if (response == null) {
             throw new Error(`Could not load "${this.path}/${subPath}"`);
@@ -40,7 +45,8 @@ export class Node<T> {
     }
 
     public async delete(subPath: string): Promise<void> {
-        const response = await this.client.del(`${this.path}/${subPath}`);
+        const subPathHash = crypto.createHash('md5').update(subPath).digest('hex');
+        const response = await this.client.del(`${this.pathHash}/${subPathHash}`);
 
         if (response == 0) {
             throw new Error(`Could not delete "${this.path}/${subPath}"`);
