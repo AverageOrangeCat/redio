@@ -1,23 +1,21 @@
 import * as crypto from 'crypto';
-import { RedisClientType } from "@redis/client";
-import { createClient } from "redis";
+import { RedisClientType } from '@redis/client';
 
 export class Node<T> {
     private path: string;
     private pathHash: string;
     private client: RedisClientType;
 
-    public constructor(path: string, url?: string) {
+    public constructor(path: string, client: RedisClientType) {
         this.path = path;
         this.pathHash = crypto.createHash('md5').update(path).digest('hex');
-        this.client = createClient({ url: url });
-        this.client.connect();
+        this.client = client;
     }
 
     public async exists(subPath: string): Promise<boolean> {
         const response = await this.client.exists(`${this.path}/${subPath}`);
 
-        if (response == 0) {
+        if (response === 0) {
             return false;
         } else {
             return true
@@ -28,7 +26,7 @@ export class Node<T> {
         const subPathHash = crypto.createHash('md5').update(subPath).digest('hex');
         const response = await this.client.set(`${this.pathHash}/${subPathHash}`, JSON.stringify(value));
         
-        if (response != 'OK') {
+        if (response !== 'OK') {
             throw new Error(`Could not store "${value}" at "${this.path}/${subPath}"`);
         }
     }
@@ -37,7 +35,7 @@ export class Node<T> {
         const subPathHash = crypto.createHash('md5').update(subPath).digest('hex');
         const response = await this.client.get(`${this.pathHash}/${subPathHash}`);
 
-        if (response == null) {
+        if (response === null) {
             throw new Error(`Could not load "${this.path}/${subPath}"`);
         } else {
             return JSON.parse(response);
@@ -48,7 +46,7 @@ export class Node<T> {
         const subPathHash = crypto.createHash('md5').update(subPath).digest('hex');
         const response = await this.client.del(`${this.pathHash}/${subPathHash}`);
 
-        if (response == 0) {
+        if (response === 0) {
             throw new Error(`Could not delete "${this.path}/${subPath}"`);
         }
     }
