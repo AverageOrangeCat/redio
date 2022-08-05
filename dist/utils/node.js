@@ -1,18 +1,17 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.Node = void 0;
-const crypto = require("crypto");
-class Node {
+import * as crypto from 'crypto';
+import { createClient } from 'redis';
+export const client = createClient();
+await client.connect();
+export class Node {
     path;
     pathHash;
-    client;
-    constructor(path, client) {
+    constructor(path) {
         this.path = path;
         this.pathHash = crypto.createHash('md5').update(path).digest('hex');
-        this.client = client;
     }
     async exists(subPath) {
-        const response = await this.client.exists(`${this.path}/${subPath}`);
+        const subPathHash = crypto.createHash('md5').update(subPath).digest('hex');
+        const response = await client.exists(`${this.pathHash}/${subPathHash}`);
         if (response === 0) {
             return false;
         }
@@ -22,14 +21,14 @@ class Node {
     }
     async store(subPath, value) {
         const subPathHash = crypto.createHash('md5').update(subPath).digest('hex');
-        const response = await this.client.set(`${this.pathHash}/${subPathHash}`, JSON.stringify(value));
+        const response = await client.set(`${this.pathHash}/${subPathHash}`, JSON.stringify(value));
         if (response !== 'OK') {
             throw new Error(`Could not store "${value}" at "${this.path}/${subPath}"`);
         }
     }
     async load(subPath) {
         const subPathHash = crypto.createHash('md5').update(subPath).digest('hex');
-        const response = await this.client.get(`${this.pathHash}/${subPathHash}`);
+        const response = await client.get(`${this.pathHash}/${subPathHash}`);
         if (response === null) {
             throw new Error(`Could not load "${this.path}/${subPath}"`);
         }
@@ -39,7 +38,7 @@ class Node {
     }
     async delete(subPath) {
         const subPathHash = crypto.createHash('md5').update(subPath).digest('hex');
-        const response = await this.client.del(`${this.pathHash}/${subPathHash}`);
+        const response = await client.del(`${this.pathHash}/${subPathHash}`);
         if (response === 0) {
             throw new Error(`Could not delete "${this.path}/${subPath}"`);
         }
@@ -50,5 +49,4 @@ class Node {
         await this.store(subPath, newValue);
     }
 }
-exports.Node = Node;
 //# sourceMappingURL=node.js.map

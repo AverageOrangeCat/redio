@@ -1,19 +1,21 @@
 import * as crypto from 'crypto';
-import { RedisClientType } from '@redis/client';
+import { createClient } from 'redis';
+
+export const client = createClient();
+await client.connect();
 
 export class Node<T> {
     private path: string;
     private pathHash: string;
-    private client: RedisClientType;
 
-    public constructor(path: string, client: RedisClientType) {
+    public constructor(path: string) {
         this.path = path;
         this.pathHash = crypto.createHash('md5').update(path).digest('hex');
-        this.client = client;
     }
 
     public async exists(subPath: string): Promise<boolean> {
-        const response = await this.client.exists(`${this.path}/${subPath}`);
+        const subPathHash = crypto.createHash('md5').update(subPath).digest('hex');
+        const response = await client.exists(`${this.pathHash}/${subPathHash}`);
 
         if (response === 0) {
             return false;
@@ -24,7 +26,7 @@ export class Node<T> {
 
     public async store(subPath: string, value: T): Promise<void> {
         const subPathHash = crypto.createHash('md5').update(subPath).digest('hex');
-        const response = await this.client.set(`${this.pathHash}/${subPathHash}`, JSON.stringify(value));
+        const response = await client.set(`${this.pathHash}/${subPathHash}`, JSON.stringify(value));
         
         if (response !== 'OK') {
             throw new Error(`Could not store "${value}" at "${this.path}/${subPath}"`);
@@ -33,7 +35,7 @@ export class Node<T> {
 
     public async load(subPath: string): Promise<T> {
         const subPathHash = crypto.createHash('md5').update(subPath).digest('hex');
-        const response = await this.client.get(`${this.pathHash}/${subPathHash}`);
+        const response = await client.get(`${this.pathHash}/${subPathHash}`);
 
         if (response === null) {
             throw new Error(`Could not load "${this.path}/${subPath}"`);
@@ -44,7 +46,7 @@ export class Node<T> {
 
     public async delete(subPath: string): Promise<void> {
         const subPathHash = crypto.createHash('md5').update(subPath).digest('hex');
-        const response = await this.client.del(`${this.pathHash}/${subPathHash}`);
+        const response = await client.del(`${this.pathHash}/${subPathHash}`);
 
         if (response === 0) {
             throw new Error(`Could not delete "${this.path}/${subPath}"`);
