@@ -1,7 +1,7 @@
 {
   "name": "redio",
-  "version": "0.1.1",
-  "description": "Makes redis more typed based.",
+  "version": "0.1.2",
+  "description": "Makes redis more type based.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
