@@ -12,7 +12,7 @@ interface User {
     password: string;
 }
 
-const users = new Node<User>('users', client);
+const users = new Node<User>('users');
 const exists = await users.exists('user@01');
 console.log(exists);
 
@@ -28,7 +28,7 @@ interface User {
     password: string;
 }
 
-const users = new Node<User>('users', client);
+const users = new Node<User>('users');
 await users.store('user@01', {
     name: 'Bob',
     password: '12345' 
@@ -46,7 +46,7 @@ interface User {
     password: string;
 }
 
-const users = new Node<User>('users', client);
+const users = new Node<User>('users');
 const user = await users.load('user@01');
 console.log(user);
 
@@ -62,7 +62,7 @@ interface User {
     password: string;
 }
 
-const users = new Node<User>('users', client);
+const users = new Node<User>('users');
 await users.delete('user@01');
 
 ```
@@ -77,7 +77,7 @@ interface User {
     password: string;
 }
 
-const users = new Node<User>('users', client);
+const users = new Node<User>('users');
 await users.update('user@01', (user) => {
     user.name = 'James';
     return user;
